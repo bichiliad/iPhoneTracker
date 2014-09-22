@@ -4,12 +4,15 @@
   "description": "",
   "main": "iphonetrack.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "deploy": "sudo NODE_ENV=production ./node_modules/.bin/forever start -a -l forever.log -o output.log -e errors.log iphonetrack.js",
+    "start": "node iphonetrack.js",
+    "halt": "./node_modules/.bin/forever stop iphonetrack.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "forever": "^0.11.1",
-    "request": "^2.44.0"
+    "express": "~4.9.4",
+    "forever": "~0.11.1",
+    "request": "~2.44.0"
   }
 }

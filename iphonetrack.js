@@ -33,8 +33,8 @@ var result = function(model) {
 
 // Check for a model's availability
 var check = function(model) {
-	var url = "http://store.apple.com/us/retail/availabilitySearch?parts.0=" + models[size] + "&zip=15213";
-	request({url:url,json:true}, result(size));
+	var url = "http://store.apple.com/us/retail/availabilitySearch?parts.0=" + models[model] + "&zip=15213";
+	request({url:url,json:true}, result(model));
 };
 
 // Send an email saying things are good to go, or things are broken
