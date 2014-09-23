@@ -5,7 +5,7 @@ var MAILGUN_KEY = "[MAILGUN-API-KEY-HERE]",
     models = {
       "MG5A2LL/A": "Space Gray (32GB)",
 	    "MG5C2LL/A": "Silver (32GB)"
-    }, 
+    },
     cachedResults = {},
     timestamp = Date().toLocaleString(),
     errors = [],
@@ -88,7 +88,7 @@ var sendEmail = function(model, alert) {
     }
   }, function(err, response, body) {
     if(err) {
-      console.error('Error sending mail:', err);  
+      console.error('Error sending mail:', err);
     }
   });
 };
@@ -104,7 +104,7 @@ app.get('/ping', function(req, res){
   res.send('pong');
 });
 
-// We data? 
+// We data?
 app.get('/data', function(req, res) {
   res.json({
     timestamp: timestamp,
@@ -113,7 +113,7 @@ app.get('/data', function(req, res) {
   });
 });
 
-// We buyin an iPhone? 
+// We buyin an iPhone?
 app.get('/', function(req, res) {
   if(!available) {
     res.send('<center><h1>NOT YET, GUYS.</h1></center>');
@@ -122,5 +122,6 @@ app.get('/', function(req, res) {
   }
 });
 
+sendEmail(null, 'The server is alive.')
 console.log('Server kickin it on port 1337');
 app.listen(1337);
