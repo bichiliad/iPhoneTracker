@@ -7,7 +7,7 @@ var MAILGUN_KEY = "[MAILGUN-API-KEY-HERE]",
 	    "MG5C2LL/A": "Silver (32GB)"
     }, 
     cachedResults = {},
-    timestamp = Date().toLocaleString();
+    timestamp = Date().toLocaleString(),
     errors = [],
     maxErrors = 100,
     available = false;
@@ -19,16 +19,20 @@ var result = function(model) {
 	  if (!error && response.statusCode == 200) {
       // Cache the results
 	  	var parts = body.body.stores[0].partsAvailability;
-      cachedResults = parts;
 
       // Pick through the iPhones
 	  	for (var part in parts) {
-	  	  if (parts[part].pickupDisplay == 'unavailable') {
+        parts[part].displayName = models[part];
+
+	  	  if (parts[part].pickupDisplay !== 'unavailable') {
 	  		  sendEmail(models[part]);
           available = true;
 	  	  }	else {
 	  		  available = false;
         }
+
+        cachedResults = parts;
+
         setTimeout(function() {
             check();
           }, 10000);
@@ -95,23 +99,28 @@ check();
 // Expose a healthcheck endpoint
 var app = express();
 
+// We alive?
 app.get('/ping', function(req, res){
   res.send('pong');
 });
 
+// We data? 
 app.get('/data', function(req, res) {
   res.json({
+    timestamp: timestamp,
     status: cachedResults,
     errors: errors
   });
 });
 
+// We buyin an iPhone? 
 app.get('/', function(req, res) {
-  if(available) {
-    res.send('<center><h1>NOT YET</h1></center>');
+  if(!available) {
+    res.send('<center><h1>NOT YET, GUYS.</h1></center>');
   } else {
-    res.send('<center><h1>BUY ONE</h1></center>');
+    res.send('<center><h1><a href="http://store.apple.com/us/buy-iphone/iphone6">BUY ONE</a></h1></center>');
   }
-})
+});
 
+console.log('Server kickin it on port 1337');
 app.listen(1337);
