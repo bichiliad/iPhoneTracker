@@ -4,7 +4,7 @@ var request = require('request'),
 var MAILGUN_KEY = "[MAILGUN-API-KEY-HERE]",
     models = {
       "MG5A2LL/A": "Space Gray (32GB)",
-	    "MG5C2LL/A": "Silver (32GB)"
+      "MG5C2LL/A": "Silver (32GB)"
     },
     cachedResults = {},
     timestamp = Date().toLocaleString(),
@@ -15,20 +15,21 @@ var MAILGUN_KEY = "[MAILGUN-API-KEY-HERE]",
 // Handle the response from Apple's API
 var result = function(model) {
   timestamp = Date().toLocaleString();
-	return function (error, response, body) {
-	  if (!error && response.statusCode == 200) {
+  return function (error, response, body) {
+    if (!error && response.statusCode == 200) {
       // Cache the results
-	  	var parts = body.body.stores[0].partsAvailability;
+      var parts = body.body.stores[0].partsAvailability;
 
       // Pick through the iPhones
-	  	for (var part in parts) {
+      for (var part in parts) {
         parts[part].displayName = models[part];
 
-	  	  if (parts[part].pickupDisplay !== 'unavailable') {
-	  		  sendEmail(models[part]);
+        // Only send emails if it was previously unavailable
+        if (parts[part].pickupDisplay !== 'unavailable' && !available) {
+          sendEmail(models[part]);
           available = true;
-	  	  }	else {
-	  		  available = false;
+        } else {
+          available = false;
         }
 
         cachedResults = parts;
@@ -36,9 +37,9 @@ var result = function(model) {
         setTimeout(function() {
             check();
           }, 10000);
-  	  }
+      }
 
-	  } else {
+    } else {
       // Push some error info.
       errors.push({
         time: Date().toLocaleString(),
@@ -50,12 +51,12 @@ var result = function(model) {
       sendEmail(null, 'There was an error requesting part availability: \n' + error);
 
     }
-	};
+  };
 };
 
 // Generate and call url for Apple's availability endpoint
 var check = function() {
-	var url = 'http://store.apple.com/us/retail/availabilitySearch?zip=15213',
+  var url = 'http://store.apple.com/us/retail/availabilitySearch?zip=15213',
       i = 0;
 
   for (var model in models) {
@@ -63,7 +64,7 @@ var check = function() {
     i++;
   }
 
-	request({url:url,json:true}, result(model));
+  request({url:url,json:true}, result(model));
 };
 
 // Send an email saying things are good to go, or things are broken
@@ -122,6 +123,6 @@ app.get('/', function(req, res) {
   }
 });
 
-sendEmail(null, 'The server is alive.')
+sendEmail(null, 'The server is alive.');
 console.log('Server kickin it on port 1337');
 app.listen(1337);
